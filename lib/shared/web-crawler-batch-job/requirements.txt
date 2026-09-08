@@ -12,7 +12,7 @@ urllib3==2.6.0
 openai==0.28.0
 beautifulsoup4==4.12.2
 requests==2.32.5
-attrs==23.1.0
+attrs==26.1.0
 feedparser==6.0.11
 aws_xray_sdk==2.14.0
 defusedxml==0.7.1
