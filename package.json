@@ -51,7 +51,7 @@
     "@aws-appsync/utils": "^1.9.0",
     "@aws-lambda-powertools/batch": "^1.14.1",
     "@aws-lambda-powertools/logger": "^1.14.1",
-    "@aws-sdk/client-cognito-identity-provider": "^3.529.0",
+    "@aws-sdk/client-cognito-identity-provider": "^3.1127.0",
     "@aws-sdk/client-secrets-manager": "^3.529.0",
     "@aws-sdk/credential-provider-node": "^3.441.0",
     "@aws-sdk/protocol-http": "^3.374.0",
