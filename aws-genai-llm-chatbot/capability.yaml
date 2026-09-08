@@ -1,0 +1,97 @@
+path: aws-genai-llm-chatbot
+version: 5.0.0
+type: SeedFarmer
+name: AWS GenAI LLM Chatbot
+description: Enterprise-ready generative AI chatbot with RAG capabilities
+exampleInputPath: assets/example-input.yaml
+labels:
+  - GenAI
+  - LLM
+  - Chatbot
+  - RAG
+  - Bedrock
+  - Claude
+  - Anthropic
+input:
+  - name: PREFIX
+    type: String
+    description: Prefix to be used for all resources
+    defaultValue: genai-chatbot
+    label: Resource Prefix
+    isRequired: true
+  - name: BEDROCK_REGION
+    type: String
+    description: AWS Region where Bedrock is available
+    defaultValue: us-east-1
+    label: Bedrock Region
+    isRequired: true
+  - name: BEDROCK_ENABLE
+    type: Boolean
+    description: Enable Bedrock integration
+    defaultValue: false
+    label: Enable Bedrock
+    isRequired: false
+  - name: CREATE_CMKS
+    type: Boolean
+    description: Create Customer Managed Keys for encryption
+    defaultValue: false
+    label: Create Customer Managed Keys
+    isRequired: false
+  - name: RETAIN_ON_DELETE
+    type: Boolean
+    description: Retain resources on delete
+    defaultValue: false
+    label: Retain Resources on Delete
+    isRequired: false
+  - name: RAG_ENABLE
+    type: Boolean
+    description: Enable RAG capabilities
+    defaultValue: false
+    label: Enable RAG
+    isRequired: false
+  - name: DEPLOYMENT_TYPE
+    type: String
+    description: Deployment type (default or custom)
+    defaultValue: default
+    label: Deployment Type
+    isRequired: false
+  - name: RAG_OPENSEARCH_ENABLE
+    type: Boolean
+    description: Use OpenSearch as vector store
+    defaultValue: false
+    label: Enable OpenSearch for RAG
+    isRequired: false
+  - name: GENAIEH_ENABLE
+    type: Boolean
+    description: Enable GenAIEH Gateway integration
+    defaultValue: false
+    label: Enable GenAIEH Gateway
+    isRequired: false
+  - name: GENAIEH_GATEWAY_URL
+    type: String
+    description: URL of the GenAIEH Gateway API
+    defaultValue: ""
+    label: GenAIEH Gateway URL
+    isRequired: false
+  - name: GENAIEH_AUTH_CLIENT_ID
+    type: String
+    description: Client ID for GenAIEH Gateway authentication
+    defaultValue: ""
+    label: GenAIEH Auth Client ID
+    isRequired: false
+  - name: GENAIEH_AUTH_CLIENT_SECRET
+    type: String
+    description: Client secret for GenAIEH Gateway authentication
+    defaultValue: ""
+    label: GenAIEH Auth Client Secret
+    isRequired: false
+  - name: GENAIEH_AUTH_TOKEN_URL
+    type: String
+    description: Token URL for GenAIEH Gateway authentication
+    defaultValue: ""
+    label: GenAIEH Auth Token URL
+    isRequired: false
+environments:
+  - name: DEPLOYMENT
+    description: Entire Capability Environment
+    label: Capability Deployment Environment

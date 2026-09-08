@@ -1,0 +1,73 @@
+name: CodeQL
+
+# A6: static analysis (SAST), complementary to the dependency-vulnerability
+# scanning (`pip-audit`, `npm audit`) already run in build.yaml. This is
+# a genuinely new addition — no CodeQL workflow existed in this
+# repository before A6 (confirmed by inspecting .github/workflows/ prior
+# to this change: build.yaml, deploy.yml, e2e-validation.yml, stale.yml).
+#
+# Languages: this repository is predominantly Python (Lambda functions,
+# the genai_core shared layer) and JavaScript/TypeScript (CDK
+# infrastructure in lib/*.ts, the React frontend in
+# lib/user-interface/react-app). Both are analyzed — CodeQL's
+# "javascript" language identifier covers TypeScript source as well
+# (TypeScript is not a separate CodeQL language extractor). No other
+# CodeQL-supported language is present in meaningful quantity.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Weekly scheduled scan, in addition to push/PR triggers — catches
+    # newly-published CodeQL query findings against unchanged code.
+    # Kept infrequent deliberately, consistent with the instruction to
+    # avoid excessive automation noise.
+    - cron: "0 6 * * 1"
+
+permissions:
+  # Least-privilege: CodeQL only needs to read repository contents and
+  # write to the code-scanning results (Security tab), and needs
+  # actions:read to fetch workflow run details for some analyses.
+  # Explicitly no write access to contents, issues, or pull-requests —
+  # a deliberate contrast with build.yaml, which sets no `permissions`
+  # block at all and therefore inherits the repository/org default
+  # (see SECURITY.md for this observation).
+  contents: read
+  security-events: write
+  actions: read
+
+jobs:
+  analyze:
+    name: Analyze (${{ matrix.language }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        language: ["python", "javascript"]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          # Uses each language's default query suite. A narrower or
+          # broader query pack can be selected later once a baseline
+          # scan's real signal-to-noise ratio is known — not assumed
+          # here, since no scan has actually run yet.
+
+      # CodeQL's autobuild handles the JS/TS case (no compilation step
+      # needed for a mixed CDK+React repo without npm dependencies
+      # installed at analysis time; CodeQL's JS/TS extractor does not
+      # require a successful `npm install`/build to analyze source).
+      # Python similarly needs no build step for CodeQL's extractor.
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{ matrix.language }}"

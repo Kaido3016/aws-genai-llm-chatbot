@@ -1,0 +1,79 @@
+# A6: Dependabot configuration.
+#
+# Ecosystems and directories below were determined by inspecting the
+# actual repository, not assumed:
+#   - npm:    two SEPARATE package.json/package-lock.json pairs exist
+#             (root CDK project, and the React frontend) — Dependabot
+#             requires one entry per directory.
+#   - pip:    root pyproject.toml / pytest_requirements.txt (the main
+#             project dependency set, already scanned by pip-audit in
+#             .github/workflows/build.yaml), plus the two batch-job
+#             requirements.txt files that same workflow explicitly
+#             pip-audits (file-import-batch-job, web-crawler-batch-job).
+#             Several other requirements.txt files exist in this repo
+#             (SageMaker sample/pipeline scripts, a resolver Lambda) —
+#             deliberately NOT included here to avoid excessive
+#             automated PR noise on sample/reference code the project's
+#             own CI doesn't treat as a first-class dependency surface
+#             (it doesn't pip-audit them either). See SECURITY.md for
+#             this explicit scoping decision.
+#   - docker: only lib/shared/alpine-zip contains a file literally named
+#             "Dockerfile" — the two other Dockerfiles in this repo
+#             (lib/shared/file-import-dockerfile,
+#             lib/shared/web-crawler-dockerfile) use non-standard
+#             filenames that Dependabot's docker ecosystem does not
+#             discover (it looks for `Dockerfile`/`Dockerfile.*`/
+#             `*.Dockerfile`), so they are NOT covered here even though
+#             they exist — a genuine, documented limitation, not an
+#             oversight. See SECURITY.md.
+#   - github-actions: covers version pinning for all workflow files
+#             under .github/workflows/, including this session's new
+#             codeql.yml.
+#
+# Update frequency is weekly across the board — frequent enough to
+# matter, infrequent enough not to create excessive PR noise, per the
+# instruction to keep this reasonable.
+
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: "npm"
+    directory: "/lib/user-interface/react-app"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: "pip"
+    directory: "/lib/shared/file-import-batch-job"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 3
+
+  - package-ecosystem: "pip"
+    directory: "/lib/shared/web-crawler-batch-job"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 3
+
+  - package-ecosystem: "docker"
+    directory: "/lib/shared/alpine-zip"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 2
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
