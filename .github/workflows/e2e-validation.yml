@@ -3,25 +3,33 @@ on:
   push:
     branches:
       - main
+
 jobs:
   validation:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
       contents: read
+    env:
+      PIPELINE_AWS_REGION: ${{ secrets.PIPELINE_AWS_REGION }}
+      PIPELINE_AWS_ACCOUNT_ID: ${{ secrets.PIPELINE_AWS_ACCOUNT_ID }}
+      PIPELINE_ROLE: ${{ secrets.PIPELINE_ROLE }}
+      PIPELINE_NAME: ${{ secrets.PIPELINE_NAME }}
     steps:
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v3
-      with:
-        aws-region: ${{ secrets.PIPELINE_AWS_REGION }}
-        role-to-assume: arn:aws:iam::${{ secrets.PIPELINE_AWS_ACCOUNT_ID }}:role/${{ secrets.PIPELINE_ROLE }}
-        role-session-name: github-action
-    - name: Validate
-      run: |
-          executionId=$(aws codepipeline start-pipeline-execution --name  ${{ secrets.PIPELINE_NAME }} --region ${{ secrets.PIPELINE_AWS_REGION }} --query "pipelineExecutionId" --output text)
+      - name: Configure AWS Credentials
+        if: ${{ env.PIPELINE_AWS_REGION != '' && env.PIPELINE_AWS_ACCOUNT_ID != '' && env.PIPELINE_ROLE != '' && env.PIPELINE_NAME != '' }}
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          aws-region: ${{ env.PIPELINE_AWS_REGION }}
+          role-to-assume: arn:aws:iam::${{ env.PIPELINE_AWS_ACCOUNT_ID }}:role/${{ env.PIPELINE_ROLE }}
+          role-session-name: github-action
+      - name: Validate
+        if: ${{ env.PIPELINE_AWS_REGION != '' && env.PIPELINE_AWS_ACCOUNT_ID != '' && env.PIPELINE_ROLE != '' && env.PIPELINE_NAME != '' }}
+        run: |
+          executionId=$(aws codepipeline start-pipeline-execution --name "$PIPELINE_NAME" --region "$PIPELINE_AWS_REGION" --query "pipelineExecutionId" --output text)
           sleep 60
           while true; do
-            status=$(aws codepipeline get-pipeline-execution --pipeline-name ${{ secrets.PIPELINE_NAME }} --region ${{ secrets.PIPELINE_AWS_REGION }} --pipeline-execution-id $executionId --query "pipelineExecution.status" --output text)
+            status=$(aws codepipeline get-pipeline-execution --pipeline-name "$PIPELINE_NAME" --region "$PIPELINE_AWS_REGION" --pipeline-execution-id "$executionId" --query "pipelineExecution.status" --output text)
             echo "Pipeline status: $status"
             if [[ "$status" == "Failed" ]]; then
               echo "Pipeline failed."
@@ -32,3 +40,6 @@ jobs:
             fi
             sleep 30
           done
+      - name: Explain skipped validation
+        if: ${{ env.PIPELINE_AWS_REGION == '' || env.PIPELINE_AWS_ACCOUNT_ID == '' || env.PIPELINE_ROLE == '' || env.PIPELINE_NAME == '' }}
+        run: echo "AWS E2E validation skipped because the optional pipeline secrets are not configured for this repository."
