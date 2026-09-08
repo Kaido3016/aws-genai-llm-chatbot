@@ -48,7 +48,7 @@
   },
   "devDependencies": {
     "@aws-amplify/cli": "^12.10.1",
-    "@aws-appsync/utils": "^1.9.0",
+    "@aws-appsync/utils": "^2.1.1",
     "@aws-lambda-powertools/batch": "^1.14.1",
     "@aws-lambda-powertools/logger": "^1.14.1",
     "@aws-sdk/client-cognito-identity-provider": "^3.529.0",
