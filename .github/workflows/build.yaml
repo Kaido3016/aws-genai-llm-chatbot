@@ -1,13 +1,13 @@
 name: smoke-build
-on: 
+on:
   push:
   pull_request:
 jobs:
   build-cdk:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: "20"
       - name: Install latest CDK CLI
@@ -24,7 +24,6 @@ jobs:
       - name: Backend
         run: |
           npm ci
-          npm audit fix || true
           npm audit --audit-level=critical
           npm run build
           npm run test
@@ -43,6 +42,5 @@ jobs:
         working-directory: ./lib/user-interface/react-app
         run: |
           npm ci
-          npm audit fix || true
           npm audit --audit-level=critical
           npm run build
