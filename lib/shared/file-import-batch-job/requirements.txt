@@ -1,5 +1,5 @@
 boto3==1.40.13
-aws-lambda-powertools==2.25.1
+aws-lambda-powertools==3.34.0
 numpy==1.26.4
 cfnresponse==1.1.2
 aws_requests_auth==0.4.3
